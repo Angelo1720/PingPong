@@ -18,3 +18,37 @@ body {
 canvas {
     border: solid 1px;
 }
+
+.contenedorPrincipal{
+    display: flex;
+    align-items: center;
+    width: 100vw;
+    justify-content: space-around;
+}
+
+.controles{
+    display: flex;
+    flex-direction: column;
+}
+
+.imagenTeclado{
+    max-width: 100px;
+    max-height: 100px;
+    display: flex;
+    align-self: center;
+}
+
+.divTextoControles{
+    display: flex;
+    flex-direction: row;
+}
+
+.textoControles{
+    margin: 10px;
+    text-align: initial;
+}
+
+.titulosCategorias{
+    margin-bottom: 3px;
+    font-weight: bold;
+}

@@ -4,16 +4,27 @@ contextoCanvas = canvas.getContext('2d');
 // Puntaje
 let puntajeIzq = 0;
 let puntajeDer = 0;
-let juegoTerminado = false;
+let estado = 'INICIO'; // * -> INICIO -> (JUGANDO <-> PAUSA) -> FIN -> *
 
-// Generar un ángulo aleatorio entre 0 y 2π (360 grados)
-const angulo = Math.random() * Math.PI * 2;
+function generarAnguloAleatorio() {
+    let angulo = Math.random() * Math.PI * 2;
+    while (
+        (angulo > Math.PI / 4 && angulo < (3 * Math.PI) / 4) || // Evitar ángulos cercanos a 90 grados
+        (angulo > (5 * Math.PI) / 4 && angulo < (7 * Math.PI) / 4) // Evitar ángulos cercanos a 270 grados
+    ) {
+        angulo = Math.random() * Math.PI * 2;
+    }
+    return angulo;
+}
+
+const angulo = generarAnguloAleatorio();
 
 // Variables de control de movimiento
 let movimientoArribaPaletaIzq = false;
 let movimientoAbajoPaletaIzq = false;
 let movimientoArribaPaletaDer = false;
 let movimientoAbajoPaletaDer = false;
+let pausa = false;
 
 const PUNTAJE_MAXIMO = 10;
 
@@ -52,9 +63,9 @@ class Paleta extends Entidad {
 
     init(tipo) {
         if (tipo === 'izq') {
-            this.x = 10; // Posición inicial de la paleta izquierda
+            this.x = 0; // Posición inicial de la paleta izquierda
         } else if (tipo === 'der') {
-            this.x = canvas.width - 30; // Posición inicial de la paleta derecha
+            this.x = canvas.width - 20; // Posición inicial de la paleta derecha
         }
         this.y = canvas.height / 2 - this.altura / 2; // Posicionar en el centro vertical
     }
@@ -112,6 +123,9 @@ function init() {
     paletaIzq.init('izq');
     paletaDer.init('der');
     pelota.init();
+
+    puntajeIzq = 0;
+    puntajeDer = 0;
 }
 
 //Manejo de teclado para mover las paletas
@@ -120,6 +134,16 @@ document.addEventListener('keydown', (event) => {
     if (event.key === 'ArrowDown') movimientoAbajoPaletaDer = true;
     if (event.key === 'w') movimientoArribaPaletaIzq = true;
     if (event.key === 's') movimientoAbajoPaletaIzq = true;
+    if (estado === 'INICIO' && event.key === 'Enter') {
+        estado = 'JUGANDO';
+    } else if (estado === 'JUGANDO' && event.key === 'p') {
+        estado = 'PAUSA';
+    } else if (estado === 'PAUSA' && event.key === 'p') {
+        estado = 'JUGANDO';
+    } else if (estado === 'FIN' && event.key === 'r') {
+        estado = 'INICIO';
+        init();
+    }
 });
 document.addEventListener('keyup', (event) => {
     if (event.key === 'ArrowUp') movimientoArribaPaletaDer = false;
@@ -128,7 +152,25 @@ document.addEventListener('keyup', (event) => {
     if (event.key === 's') movimientoAbajoPaletaIzq = false;
 });
 
-function update() {
+//INICIO
+function upd_inicio() {
+    borrarLienzo();
+    draw_jugando();
+    contextoCanvas.fillStyle = 'rgba(0, 0, 0, 0.5)';
+    contextoCanvas.fillRect(0, 0, canvas.width, canvas.height);
+
+    contextoCanvas.fillStyle = '#FFFFFF';
+    contextoCanvas.font = '40px Arial';
+    contextoCanvas.textAlign = 'center';
+    contextoCanvas.fillText('Presiona Enter para iniciar', canvas.width / 2, canvas.height / 2);
+}
+
+function draw_inicio() {
+
+}
+
+//JUGANDO
+function upd_jugando() {
     // Controlar movimiento de la paleta izquierda (W y S)
     if (movimientoArribaPaletaIzq) paletaIzq.moverPaleta(-1);
     if (movimientoAbajoPaletaIzq) paletaIzq.moverPaleta(1);
@@ -169,7 +211,7 @@ function update() {
         pelota.y = canvas.height / 2 - pelota.altura / 2;
 
         // Generar un nuevo ángulo de movimiento aleatorio
-        const nuevoAngulo = Math.random() * Math.PI * 2;
+        const nuevoAngulo = generarAnguloAleatorio();
         pelota.direccionX = Math.cos(nuevoAngulo);
         pelota.direccionY = Math.sin(nuevoAngulo);
         pelota.velocidad = 3; // Restablecer la velocidad
@@ -186,13 +228,16 @@ function update() {
 
     // Verificar si alguien ganó
     if (puntajeIzq >= PUNTAJE_MAXIMO || puntajeDer >= PUNTAJE_MAXIMO) {
-            juegoTerminado = true; // Terminar el juego
-            console.log(puntajeIzq >= PUNTAJE_MAXIMO ? "¡Ganó el jugador izquierdo!" : "¡Ganó el jugador derecho!");
-        }
+        estado = 'FIN'; // Terminar el juego
+    }
+
+   /*  if (pausa) {
+        estado = 'PAUSA';
+    } */
 
 }
 
-function draw() {
+function draw_jugando() {
     borrarLienzo();
 
     //Dibujo la cancha
@@ -219,8 +264,67 @@ function draw() {
 
 }
 
+//PAUSA
+function upd_pausa() {
+
+}
+
+function draw_pausa() {
+    draw_jugando();
+    // Mostrar mensaje de pausa en el centro del canvas
+    contextoCanvas.fillStyle = 'rgba(0, 0, 0, 0.5)';
+    contextoCanvas.fillRect(0, 0, canvas.width, canvas.height);
+
+    contextoCanvas.fillStyle = '#FFFFFF';
+    contextoCanvas.font = '40px Arial';
+    contextoCanvas.textAlign = 'center';
+    contextoCanvas.fillText('Juego en pausa', canvas.width / 2, canvas.height / 2);
+}
+
+//FIN
+function upd_fin() {
+    //no voy a actualizar le estado
+
+}
+
+function draw_fin() {
+    borrarLienzo();
+    draw_jugando();
+    contextoCanvas.fillStyle = 'rgba(0, 0, 0, 0.5)';
+    contextoCanvas.fillRect(0, 0, canvas.width, canvas.height);
+
+    contextoCanvas.fillStyle = '#FFFFFF';
+    contextoCanvas.font = '40px Arial';
+    contextoCanvas.textAlign = 'center';
+    contextoCanvas.fillText(
+        puntajeIzq >= PUNTAJE_MAXIMO ? '¡Ganó el jugador izquierdo!' : '¡Ganó el jugador derecho!',
+        canvas.width / 2, canvas.height / 2
+    );
+
+}
+
 function gameloop() {
-    update();
+    switch (estado) {
+        case 'INICIO':
+            update = upd_inicio;
+            draw = draw_inicio;
+            break;
+        case 'JUGANDO':
+            update = upd_jugando;
+            draw = draw_jugando;
+            break;
+        case 'PAUSA':
+            update = upd_pausa;
+            draw = draw_pausa;
+            break;
+        case 'FIN':
+            update = upd_fin;
+            draw = draw_fin;
+            break;
+    }
+    if (estado !== 'PAUSA') {
+        update();
+    }
     draw();
     requestAnimationFrame(gameloop);
 }

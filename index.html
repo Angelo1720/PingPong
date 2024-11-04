@@ -1,14 +1,45 @@
 <!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="./css/pong.css" />
-    <title>Pong</title>
-  </head>
-  <body>
-    <h1>Ping Pong - Angelo Festino</h1>
-    <canvas id="pongCanvas" width="900" height="600"></canvas>
-    <script type="text/javascript" src="./js/pong.js"></script>
-  </body>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="./css/pong.css" />
+        <title>Pong</title>
+    </head>
+    <body>
+        <h1>Ping Pong - Angelo Festino</h1>
+        <div class="contenedorPrincipal">
+            <div class="controles">
+                <img
+                    src="./resources/images/teclado.png"
+                    alt="Controles teclado"
+                    class="imagenTeclado"
+                />
+                <div class="divTextoControles">
+                    <div class="textoControles">
+                        <p class="titulosCategorias">Controles Izquierda:</p>
+                        <p>Arriba: W</p>
+                        <p>Abajo: S</p>
+                        <p>Izquierda: A</p>
+                        <p>Derecha: D</p>
+                    </div>
+                    <div class="textoControles">
+                        <p class="titulosCategorias">Controles Derecha:</p>
+                        <p>Arriba: Flecha arriba</p>
+                        <p>Abajo: Flecha abajo</p>
+                        <p>Izquierda: Flecha izquierda</p>
+                        <p>Derecha: Flecha derecha</p>
+                    </div>
+                    <div class="textoControles">
+                        <p class="titulosCategorias">Estados:</p>
+                        <p>Empezar a jugar: Enter</p>
+                        <p>Pausa: p</p>
+                        <p>Reiniciar: r</p>
+                    </div>
+                </div>
+            </div>
+            <canvas id="pongCanvas" width="900" height="600"></canvas>
+        </div>
+        <script type="text/javascript" src="./js/pong.js"></script>
+    </body>
 </html>
